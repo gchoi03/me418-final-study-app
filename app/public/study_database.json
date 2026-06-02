@@ -1,0 +1,941 @@
+{
+  "course": "ME 418 - Dynamic Systems and Control",
+  "professor": "Professor Brendon Anderson",
+  "institution": "California Polytechnic State University",
+  "source_note": "Code entries are sourced exclusively from text extracted directly from the lab report PDFs. Appendix code blocks in Labs 3A, 3B, 4, 5A, and 5B were embedded as image screenshots and are therefore not extractable as text. All inline code snippets that appeared as readable text in the report body are preserved verbatim.",
+  "labs": [
+    {
+      "lab_id": "Lab_1A",
+      "title": "Lab 1A: Open-Loop Simulation",
+      "date": "April 06, 2026",
+      "platform": "MATLAB/Simulink",
+      "objectives": [
+        "Introduce system modeling using Simulink",
+        "Analyze first-order and second-order dynamic systems",
+        "Observe time responses of mass-damper, first-order, and second-order systems to step inputs",
+        "Understand how system parameters (gain, damping ratio, time constants) affect system behavior"
+      ],
+      "prelab_questions": [
+        "How does the time constant affect the speed of a first-order system response?",
+        "What is the role of the damping ratio in a second-order system?",
+        "How do you calculate steady-state gain from a step response?",
+        "What is the difference between overdamped, underdamped, and critically damped responses?",
+        "Does the system behave as expected? How long does it take to reach 63.2% of its final value?",
+        "What is the size of the output step?",
+        "How could you change the system to produce the same output but twice as fast?",
+        "How could you double the output?",
+        "What effect does doubling the damping coefficient have?",
+        "What effect does doubling the oscillation frequency have?",
+        "Do two first-order systems in series constitute a second-order system?",
+        "What role does each subsystem play in determining the response?"
+      ],
+      "important_equations": [
+        "First-order TF: G(s) = K / (tau*s + 1)",
+        "Second-order TF: G(s) = K*wn^2 / (s^2 + 2*zeta*wn*s + wn^2)",
+        "Mass-damper ODE: m*dv/dt + b*v = F",
+        "Time constant tau: time to reach 63.2% of final value",
+        "Steady-state gain K = steady_state_output / step_input_magnitude",
+        "Settling time ~4*tau for first-order systems",
+        "Series two first-order TFs: G_total(s) = G1(s)*G2(s)"
+      ],
+      "matlab_simulink_exercises": [
+        "Exercise 1: Model mass-damper system using differential equation blocks in Simulink",
+        "Exercise 2: Implement first-order systems using Transfer Function blocks; vary K and tau",
+        "Exercise 3: Model second-order systems with standard TF; vary zeta and wn",
+        "Exercise 4: Connect two first-order systems in series; plot combined response in MATLAB",
+        "Adjust simulation stop time and solver tolerance for accuracy"
+      ],
+      "python_coding_exercises": [],
+      "matlab_code_verbatim": [
+        {
+          "source": "Appendix, Figure 15 — Example MATLAB Plotting Code Snippet",
+          "code": "t = out.tout;\nv = out.vel;\n\nfigure;\nplot(t, v, 'LineWidth', 1.5);\ngrid on;\ntitle('Velocity vs Time');\nxlabel('Time (s)');\nylabel('Velocity');"
+        }
+      ],
+      "hardware_procedures": [],
+      "controller_tuning_methods": [],
+      "common_mistakes": [
+        "Confusing time constant with settling time (settling ~4*tau, not tau)",
+        "Forgetting that two first-order systems in series form a second-order system (but without oscillation)",
+        "Assuming increased gain always improves performance without checking stability",
+        "Misreading 63.2% threshold for time constant from plot",
+        "Not adjusting solver tolerance, leading to inaccurate simulation results"
+      ],
+      "likely_exam_concepts": [
+        "Identify system order from step response shape",
+        "Extract time constant and steady-state gain from a plot",
+        "Predict effect of doubling gain or halving time constant",
+        "Sketch expected step response for given zeta and wn values",
+        "Build/interpret a Simulink block diagram for first/second-order TF",
+        "Effect of damping ratio on overshoot and oscillation",
+        "Effect of natural frequency on response speed",
+        "What does a step response of two series first-order systems look like?"
+      ]
+    },
+
+    {
+      "lab_id": "Lab_1B",
+      "title": "Lab 1B: Closed-Loop Simulation",
+      "date": "April 12, 2026",
+      "platform": "MATLAB/Simulink",
+      "objectives": [
+        "Introduce closed-loop control systems",
+        "Analyze behavior of proportional, integral, and derivative (PID) controllers",
+        "Observe how controller actions influence system response, steady-state error, and stability",
+        "Explore effects of controller gain tuning and actuator saturation on system performance"
+      ],
+      "prelab_questions": [
+        "What does each term (P, I, D) contribute to controller behavior?",
+        "Why does proportional control alone leave steady-state error?",
+        "What is actuator saturation and why does it matter?",
+        "How does increasing Kp affect rise time and overshoot?",
+        "What is steady-state error and how is it calculated?"
+      ],
+      "important_equations": [
+        "PID control law: u(t) = Kp*e(t) + Ki*integral(e) + Kd*de/dt",
+        "Steady-state error (proportional only): e_ss = 1 / (1 + Kp*K_plant)",
+        "Closed-loop TF: G_cl(s) = G_ol(s) / (1 + G_ol(s))",
+        "For tank system: G(s) = K / (tau*s + 1), steady-state error = 1/(1+Kp*K)",
+        "Percent steady-state error = |ref - output_ss| / ref * 100%",
+        "Damping ratio from closed-loop poles: zeta = real(pole) / |pole|"
+      ],
+      "matlab_simulink_exercises": [
+        "Exercise 5: Model PID controller independently; observe individual P, I, D actions to step input",
+        "Exercise 6: Control first-order tank system with proportional feedback; vary Kp",
+        "Part (a): Kp baseline — observe steady-state error (~0.0909 inches for 1-inch reference)",
+        "Part (b): Step increase and decrease — test bidirectional tracking",
+        "Part (c): Increase Kp until steady-state error < 10%",
+        "Part (d): Design for fast response — steady-state error 6.25%, time constant ~1.3 s",
+        "Part (e): Add Saturation block; observe nonlinear behavior when valve command hits limits",
+        "Part (f): Redesign controller to eliminate saturation while maintaining acceptable performance",
+        "Exercise 7: Second-order closed-loop system; compare Kp=1 vs Kp=2 step responses"
+      ],
+      "python_coding_exercises": [],
+      "matlab_code_verbatim": [
+        {
+          "source": "Appendix, Figure 19 — Example MATLAB Script: Plotting, Calculations, Annotations",
+          "description": "Full inline script from report body. Computes y_ss, percent_error, and tau from Simulink output, then annotates the plot.",
+          "code": "%%ExamplePlotwithCalculationsandAnnotations\n%Thisscriptplots the tank levelresponseand calculates:\n%steady-state value, percent error, time constant (tau)\n\nt = out.tout;\ny = out.y;\n\nfigure;\nplot(t, y, 'LineWidth', 1.5);\ngrid on;\ntitle('Example: Tank Level Response with Annotations');\nxlabel('Time (s)');\n\nhold on;\n\n%% --- Steady-State Value ---\ny_ss = y(end);\n\n% Percent error for 1-inch step input\nerror = 1 - y_ss;\npercent_error = error * 100;\n\n% Mark steady-state point\nplot(t(end), y_ss, 'ro');\n\n% Label steady-state and error\ntext(t(end)*0.6, y_ss*0.95, ...\n    sprintf('y_{ss} = %.3f in\\nError = %.2f%%', y_ss, percent_error), ...\n    'FontSize', 10);\n\n%% --- Time Constant (tau) ---\n% tau = time when output reaches 63.2% of steady-state value\ny_tau = 0.632 * y_ss;\n\n% Find closest time index\n[~, idx] = min(abs(y - y_tau));\nt_tau = t(idx);\n\n% Adjust for step time (assumes step at t = 1 s)\ntau = t_tau - 1;\n\n% Mark tau point\nplot(t_tau, y_tau, 'ro');\n\n% Label tau\ntext(t_tau + 0.5, y_tau, ...\n    sprintf('\\tau \\approx %.2f s', tau), ...\n    'FontSize', 10);\n\nhold off;"
+        }
+      ],
+      "code_completion_exercises": [
+        {
+          "title": "Lab 1B MATLAB Script — Fill in the Blanks",
+          "instructions": "Complete the missing lines in the MATLAB script used in Lab 1B to analyze the tank level step response.",
+          "blanked_code": "t = out.tout;\ny = out.y;\n\nfigure;\nplot(t, y, 'LineWidth', 1.5);\ngrid on;\ntitle('Example: Tank Level Response with Annotations');\nxlabel('Time (s)');\n\nhold on;\n\n%% --- Steady-State Value ---\ny_ss = _________;          % (1) Extract the final steady-state value\n\nerror = 1 - y_ss;\npercent_error = _________;  % (2) Convert error to percentage\n\nplot(t(end), y_ss, 'ro');\n\n%% --- Time Constant (tau) ---\ny_tau = _________ * y_ss;  % (3) 63.2% criterion\n\n[~, idx] = min(abs(y - y_tau));\nt_tau = t(idx);\n\ntau = t_tau - _________;   % (4) Adjust for step applied at t = 1 s\n\nhold off;",
+          "answers": {
+            "(1)": "y(end)",
+            "(2)": "error * 100",
+            "(3)": "0.632",
+            "(4)": "1"
+          }
+        }
+      ],
+      "hardware_procedures": [],
+      "controller_tuning_methods": [
+        "Increase Kp to reduce steady-state error and speed up response",
+        "Balance Kp against saturation limits — high Kp causes actuator saturation",
+        "Observe that P-only control cannot eliminate steady-state error for type-0 plant",
+        "Add integral term to eliminate steady-state error",
+        "Tradeoff: faster response (higher Kp) -> more oscillation, less damping"
+      ],
+      "common_mistakes": [
+        "Thinking proportional control eliminates steady-state error (it does NOT for type-0 plants)",
+        "Ignoring actuator saturation when designing high-gain controllers",
+        "Confusing open-loop gain with closed-loop gain",
+        "Not recognizing that derivative action produces a sharp spike at a step input",
+        "Forgetting integral action causes a continuously increasing output for a constant error",
+        "Setting Kp too high causes system to go unstable or saturate"
+      ],
+      "likely_exam_concepts": [
+        "Describe individual P, I, D actions to a step input",
+        "Calculate steady-state error for a given Kp and plant gain",
+        "Build Simulink closed-loop block diagram with PID controller",
+        "Explain effect of saturation on closed-loop performance",
+        "Determine Kp needed to achieve steady-state error < X%",
+        "Predict how doubling Kp changes damping ratio and overshoot",
+        "Identify underdamped vs overdamped closed-loop response from poles",
+        "Why does integral action eliminate steady-state error?"
+      ]
+    },
+
+    {
+      "lab_id": "Lab_2",
+      "title": "Lab 2: Python Simulation — Rocket Booster Pendulum (P and PD Control)",
+      "date": "April 21, 2026",
+      "platform": "Python/Jupyter Notebook",
+      "objectives": [
+        "Simulate and control the vertical landing of a rocket booster modeled as a pendulum",
+        "Implement proportional (P) and proportional-derivative (PD) controllers in Python",
+        "Analyze effects of controller gains on system response (overshoot and settling time)",
+        "Tune controller gains to meet design requirements: <5% overshoot, settling time <5 seconds"
+      ],
+      "prelab_questions": [
+        "What is the control law for a proportional controller?",
+        "What is the control law for a PD controller?",
+        "How does Kp affect settling time?",
+        "How does Kd affect percent overshoot?",
+        "Write a Python function that accepts one input n and outputs the first n-th Fibonacci number and their sum"
+      ],
+      "important_equations": [
+        "P control law: u = Kp * e",
+        "PD control law: u = Kp * e + Kd * edot  (where edot is the derivative of the error)",
+        "Error: e = desired_angle - measured_angle",
+        "Percent overshoot %OS = (peak - final) / final * 100%",
+        "Settling time: time to stay within 2% band of final value"
+      ],
+      "appendix_code_note": "The actual Python simulation code (pendulum model, control loop, plotting) was submitted in Appendix A as a screenshot image and is not extractable as text. The report references a Jupyter Notebook environment. The exact function signatures and variable names below are reconstructed from the report body text descriptions.",
+      "reported_control_laws_verbatim": [
+        "P controller: u = Kp * e",
+        "PD controller: u = Kp * e + Kd * edot  (variable name 'edot' used in report text)"
+      ],
+      "reported_warmup_description_verbatim": "A function [that] accepts one input n, and outputs the first n-th Fibonacci number and their sum.",
+      "experimental_results_tables": [
+        {
+          "table": "Table 2.1 — Response characteristics vs. Kp, with Kd = 0",
+          "data": [
+            {"Kp": 400, "percent_OS": 0,      "settling_time_s": 100},
+            {"Kp": 410, "percent_OS": 0,      "settling_time_s": 40},
+            {"Kp": 420, "percent_OS": 0,      "settling_time_s": 25},
+            {"Kp": 430, "percent_OS": 0,      "settling_time_s": 16},
+            {"Kp": 440, "percent_OS": 0.0120, "settling_time_s": 17},
+            {"Kp": 450, "percent_OS": 0.0311, "settling_time_s": 17.5}
+          ]
+        },
+        {
+          "table": "Table 2.2 — Response characteristics vs. Kd, with Kp = 600",
+          "data": [
+            {"Kd": 0,   "percent_OS": 0.263, "settling_time_s": 15},
+            {"Kd": 50,  "percent_OS": 0.152, "settling_time_s": 12.5},
+            {"Kd": 100, "percent_OS": 0.075, "settling_time_s": 12},
+            {"Kd": 150, "percent_OS": 0.026, "settling_time_s": 10},
+            {"Kd": 200, "percent_OS": 0.003, "settling_time_s": 6.5}
+          ]
+        }
+      ],
+      "matlab_simulink_exercises": [],
+      "python_coding_exercises": [
+        {
+          "title": "Warmup — Fibonacci function",
+          "source": "Appendix A, Section 2.3.3 (described in report body text)",
+          "description": "Accepts one input n, outputs the first n-th Fibonacci number and their sum.",
+          "note": "Exact implementation was an image in Appendix A. The function signature and behavior are described verbatim in the report."
+        },
+        {
+          "title": "P Controller implementation",
+          "source": "Report body text, Methodology section",
+          "description": "Proportional controller implemented using the control law u = Kp * e, where the error e is the difference between the desired angle and the measured angle.",
+          "control_law_verbatim": "u = Kp * e",
+          "variable_names": {
+            "u": "control input",
+            "Kp": "proportional gain",
+            "e": "error = desired_angle - measured_angle"
+          }
+        },
+        {
+          "title": "PD Controller implementation",
+          "source": "Report body text, Methodology section",
+          "description": "PD controller implemented using the control law u = Kp * e + Kd * edot, where edot represents the derivative of the error.",
+          "control_law_verbatim": "u = Kp * e + Kd * edot",
+          "variable_names": {
+            "u": "control input",
+            "Kp": "proportional gain",
+            "Kd": "derivative gain",
+            "e": "error",
+            "edot": "derivative of error"
+          }
+        }
+      ],
+      "code_completion_exercises": [
+        {
+          "title": "Fibonacci Function",
+          "instructions": "Write the Python function described in the Lab 2 warmup assignment.",
+          "specification": "Accepts one input n. Outputs the first n-th Fibonacci number and their sum.",
+          "skeleton": "def fibonacci(n):\n    # TODO: compute the nth Fibonacci number and the sum of the first n Fibonacci numbers\n    pass"
+        },
+        {
+          "title": "P and PD Controller — Control Law",
+          "instructions": "Fill in the control law lines using the exact variable names from the Lab 2 report.",
+          "blanked_code": "# P controller (from Lab 2 report, Methodology)\nu = _________          # u = Kp * e\n\n# PD controller (from Lab 2 report, Methodology)\nu = _________          # u = Kp * e + Kd * edot",
+          "answers": {
+            "P law": "Kp * e",
+            "PD law": "Kp * e + Kd * edot"
+          },
+          "note": "Variable name 'edot' (not 'e_dot') is the name used in the report text."
+        }
+      ],
+      "hardware_procedures": [],
+      "controller_tuning_methods": [
+        "Increase Kp to reduce settling time (introduces overshoot at high values)",
+        "Increase Kd to reduce percent overshoot (minor effect on settling time)",
+        "Kp=600, Kd=200: achieves ~0.003% OS and 6.5 s settling time",
+        "Design target: <5% overshoot and settling time <5 seconds"
+      ],
+      "common_mistakes": [
+        "Using e_dot instead of edot — the report uses the variable name 'edot'",
+        "Not initializing edot before the control loop",
+        "Confusing the pendulum model — rocket booster is modeled as a simplified pendulum",
+        "Increasing Kp too much: settling time decreases but overshoot appears",
+        "Not using a 2% band definition for settling time"
+      ],
+      "likely_exam_concepts": [
+        "Write the P and PD control laws using variable names from the report (Kp, e, Kd, edot)",
+        "Explain effect of Kp on settling time and of Kd on overshoot",
+        "Given Table 2.1 or 2.2, choose optimal gains to meet a performance spec",
+        "Write a Fibonacci function in Python",
+        "Compute percent overshoot from a plot",
+        "Identify settling time using the 2% criterion"
+      ]
+    },
+
+    {
+      "lab_id": "Lab_3A",
+      "title": "Lab 3A: Step Response Test (DC Motor Characterization)",
+      "date": "April 29, 2026",
+      "platform": "Hardware (STM32 + MicroPython) + MATLAB/Simulink + Python/Jupyter",
+      "objectives": [
+        "Characterize the dynamic response of a DC motor using a step input",
+        "Determine steady-state gain and time constant from experimental velocity response",
+        "Develop a first-order transfer function model of the motor",
+        "Validate the model by comparing simulated vs experimental step response"
+      ],
+      "prelab_questions": [
+        "What is a first-order system and what are its key parameters?",
+        "How do you extract the time constant from a step response plot?",
+        "How do you calculate steady-state gain from a step response?",
+        "What is the utime module in MicroPython used for?",
+        "What is the encoder used for in this experiment?"
+      ],
+      "important_equations": [
+        "Steady-state gain: K = omega_ss / V_input  (925 rad/s / 24 V = 38.5 rad/s/V)",
+        "Time constant tau: time to reach 63.2% of steady-state velocity (0.23 s)",
+        "First-order TF: G(s) = K / (tau*s + 1)",
+        "Sampling interval: 1 / 500 Hz = 2 ms",
+        "Settling time ~4*tau (time within 2% of steady state)"
+      ],
+      "identified_parameters": {
+        "steady_state_gain_K": 38.5,
+        "time_constant_tau_s": 0.23,
+        "settling_time_s": 1.0,
+        "steady_state_velocity_rad_s": 925,
+        "input_voltage_V": 24,
+        "sampling_rate_Hz": 500,
+        "sampling_interval_ms": 2
+      },
+      "appendix_code_note": "main.py (Appendix A) was submitted as an image screenshot and is not extractable as text. The report body text describes the file's purpose and explicitly names the utime functions used.",
+      "reported_api_calls_verbatim": [
+        "utime.ticks_us() — used to track the current time in microseconds",
+        "utime.ticks_diff() — used to compute the elapsed time between samples",
+        "motor.py — provided MicroPython module, uploaded to microcontroller using Thonny",
+        "encoder.py — provided MicroPython module, uploaded to microcontroller using Thonny",
+        "main.py — developed to perform a step response test"
+      ],
+      "reported_sampling_logic_verbatim": "Data was recorded only when the elapsed time exceeded the predefined sampling interval, ensuring a consistent sampling rate throughout the experiment.",
+      "reported_data_flow_verbatim": "The measured velocity data was stored in queues and later transmitted to a PC via serial communication.",
+      "matlab_simulink_exercises": [
+        "Build Simulink model of DC motor using identified first-order TF: G(s) = 38.5 / (0.23*s + 1)",
+        "Compare simulated step response to experimental data overlay"
+      ],
+      "python_coding_exercises": [
+        {
+          "title": "main.py — Step response test on STM32",
+          "source": "Appendix A (image — not extractable as text)",
+          "files_used": ["main.py", "motor.py", "encoder.py"],
+          "described_behavior": "Drives motor at constant 100% voltage (24V step), samples encoder at 500 Hz using utime, stores data in queues, transmits to PC via serial.",
+          "api_calls_from_report": {
+            "utime.ticks_us()": "Track current time in microseconds",
+            "utime.ticks_diff(current, previous)": "Compute elapsed time between samples",
+            "motor.py": "Provided module — controls motor voltage",
+            "encoder.py": "Provided module — reads angular velocity"
+          },
+          "sampling_condition_verbatim": "Data was recorded only when the elapsed time exceeded the predefined sampling interval"
+        }
+      ],
+      "code_completion_exercises": [
+        {
+          "title": "MicroPython timed sampling pattern",
+          "instructions": "Fill in the utime calls described in the Lab 3A report to implement consistent 500 Hz sampling.",
+          "blanked_code": "import utime\nfrom motor import Motor\nfrom encoder import Encoder\n\nmotor = Motor()\nencoder = Encoder()\n\nSAMPLING_INTERVAL_US = 2000   # 500 Hz -> 2 ms -> 2000 us\n\nmotor.set_effort(100)         # 100% = 24 V step input\n\nt_last = _____________         # (1) record start time in microseconds\n\nwhile collecting:\n    t_now = _____________     # (2) get current time in microseconds\n    elapsed = _____________   # (3) compute elapsed time using ticks_diff\n\n    if elapsed >= SAMPLING_INTERVAL_US:\n        vel = encoder.get_velocity()\n        data_queue.append(vel)\n        t_last = t_now",
+          "answers": {
+            "(1)": "utime.ticks_us()",
+            "(2)": "utime.ticks_us()",
+            "(3)": "utime.ticks_diff(t_now, t_last)"
+          },
+          "note": "The report explicitly names utime.ticks_us() and utime.ticks_diff() as the two functions used. The sampling condition 'data was recorded only when elapsed time exceeded the predefined sampling interval' maps directly to the if-statement shown."
+        }
+      ],
+      "hardware_procedures": [
+        "Connect STM32 microcontroller to DC motor and rotary encoder",
+        "Upload motor.py and encoder.py to STM32 using Thonny",
+        "Run main.py: apply constant 100% voltage (24V) step input to motor",
+        "Sample angular velocity at 500 Hz using utime module",
+        "Store data in queues, transmit to PC via serial communication",
+        "Plot velocity vs time in Jupyter Notebook; identify K=38.5 and tau=0.23 s"
+      ],
+      "controller_tuning_methods": [],
+      "common_mistakes": [
+        "Reading time constant at 63.2% but measuring from wrong baseline",
+        "Using percentage (100%) instead of actual voltage (24V) when calculating steady-state gain",
+        "Subtracting ticks directly instead of using utime.ticks_diff() — ticks can wrap",
+        "Confusing settling time (1.0 s) with time constant (0.23 s)",
+        "Not accounting for motor driver gain (24V / 100% = 0.24 V/%) when building the Simulink model"
+      ],
+      "likely_exam_concepts": [
+        "Given a step response plot, calculate K and tau",
+        "Write MicroPython timed sampling using utime.ticks_us() and utime.ticks_diff()",
+        "Build and validate a Simulink first-order model from identified parameters",
+        "Explain why utime.ticks_diff() must be used instead of direct subtraction",
+        "Explain why experimental and simulated step responses differ"
+      ]
+    },
+
+    {
+      "lab_id": "Lab_3B",
+      "title": "Lab 3B: Closed-Loop Velocity Control (PI Controller on Microcontroller)",
+      "date": "May 6, 2026",
+      "platform": "Hardware (STM32 + MicroPython) + MATLAB/Simulink + Python/Jupyter",
+      "objectives": [
+        "Implement a PI controller using object-oriented programming in MicroPython",
+        "Deploy controller on STM32 microcontroller for closed-loop velocity control",
+        "Test and evaluate P-only, I-only, and PI controller performance using step-response tests",
+        "Compare experimental results with theoretical Simulink model",
+        "Perform hand calculations for theoretical time constant and steady-state values"
+      ],
+      "prelab_questions": [
+        "What does proportional control do to steady-state error vs response speed?",
+        "What does integral control do to steady-state error vs transient response?",
+        "How do you identify controller saturation graphically?",
+        "What are closed-loop poles and what do they tell you about stability?",
+        "Write an OOP Python class with __init__, set_setpoint, set_gains, and run methods"
+      ],
+      "important_equations": [
+        "PI control law: u(t) = Kp*e(t) + Ki*integral(e(t)dt)",
+        "Motor model: G_motor(s) = Kss / (tau*s + 1)  [Kss=46, omega=4 -> tau=1/4=0.25]",
+        "Motor driver gain: 24/100 = 0.24",
+        "Motor model including driver: G(s) = (0.24 * Kss) / (tau*s + 1)",
+        "PI controller TF: C(s) = Kp + Ki/s = (Kp*s + Ki) / s",
+        "Open-loop TF: L(s) = C(s) * G(s)",
+        "Closed-loop TF: T(s) = L(s) / (1 + L(s))",
+        "Closed-loop poles: roots of denominator of T(s)"
+      ],
+      "identified_gains_verbatim": {
+        "Kp": 0.19,
+        "Ki": 0.5,
+        "Kss": 46,
+        "omega": 4,
+        "motor_driver_gain": "24/100 = 0.24",
+        "source": "Report body text, Discussion section: 'Using: Kp = 0.19  Ki = 0.5  Kss = 46  omega = 4  Motor driver gain = 24/100 = 0.24'"
+      },
+      "appendix_code_note": "controller.py (Appendix A), main.py (Appendix B), and Jupyter Notebook (Appendix C) were all submitted as image screenshots and are not extractable as text. The report body text describes the class structure, method names, and method signatures verbatim.",
+      "reported_class_structure_verbatim": {
+        "file": "controller.py",
+        "description": "Class file to control velocity of the motor using the encoder information.",
+        "constructor": "__init__() — to set the PI gains",
+        "method_set_setpoint": "set_setpoint() — sets the setpoint",
+        "method_set_gains": "set_gains() — sets the controller gains",
+        "method_run": "run() — takes in the current velocity, and returns the correct voltage the motor should run at",
+        "source": "Report body text, Methodology section verbatim"
+      },
+      "reported_main_py_verbatim": "A main program (main.py) attached in Appendix B was developed to perform a step response test. This file performs the closed-loop step response test.",
+      "reported_jupyter_verbatim": "The collected data was plotted using Python in a Jupyter Notebook, documented in Appendix C, showing [velocity] and controller output with corresponding Kp and Ki values.",
+      "matlab_simulink_exercises": [
+        "Build Simulink model: PI controller + DC motor TF + unity feedback",
+        "Set PI gains to optimal values found experimentally (Kp=0.19, Ki=0.5)",
+        "Overlay simulated and experimental step responses",
+        "Compute theoretical closed-loop poles (both real and negative -> overdamped)"
+      ],
+      "python_coding_exercises": [
+        {
+          "title": "controller.py — PI controller class (MicroPython, STM32)",
+          "source": "Appendix A (image — not extractable as text)",
+          "class_name": "controller",
+          "file_name": "controller.py",
+          "methods_from_report": {
+            "__init__": "Sets the PI gains",
+            "set_setpoint": "Sets the setpoint",
+            "set_gains": "Sets the controller gains",
+            "run": "Takes in the current velocity, returns the correct voltage the motor should run at"
+          }
+        },
+        {
+          "title": "main.py — Closed-loop step response test (STM32)",
+          "source": "Appendix B (image — not extractable as text)",
+          "described_behavior": "Performs the closed-loop step response test on the STM32 microcontroller"
+        },
+        {
+          "title": "Jupyter Notebook — Plotting P-only, I-only, PI responses",
+          "source": "Appendix C (image — not extractable as text)",
+          "described_behavior": "Plots velocity and controller output with corresponding Kp and Ki values; compares P-only, I-only, and PI configurations"
+        }
+      ],
+      "code_completion_exercises": [
+        {
+          "title": "controller.py — PI Controller class skeleton",
+          "instructions": "Complete the controller.py class using the method names and signatures described verbatim in the Lab 3B report.",
+          "blanked_code": "class controller:\n\n    def __init__(self, Kp, Ki):\n        # (1) Store Kp and Ki as instance variables\n        # (2) Initialize integral accumulator to 0\n        pass\n\n    def set_setpoint(self, setpoint):\n        # (3) Store the setpoint as an instance variable\n        pass\n\n    def set_gains(self, Kp, Ki):\n        # (4) Update Kp and Ki instance variables\n        pass\n\n    def run(self, current_velocity):\n        # (5) Compute error = setpoint - current_velocity\n        # (6) Accumulate error into integral term (multiply by dt)\n        # (7) Compute and return voltage = Kp*error + Ki*integral\n        pass",
+          "answers": {
+            "(1)": "self.Kp = Kp;  self.Ki = Ki",
+            "(2)": "self.integral = 0",
+            "(3)": "self.setpoint = setpoint",
+            "(4)": "self.Kp = Kp;  self.Ki = Ki",
+            "(5)": "error = self.setpoint - current_velocity",
+            "(6)": "self.integral += error * dt",
+            "(7)": "return self.Kp * error + self.Ki * self.integral"
+          },
+          "note": "Class name is 'controller' (lowercase), matching the file name controller.py. Method names __init__, set_setpoint, set_gains, and run are taken verbatim from the report text."
+        }
+      ],
+      "hardware_procedures": [
+        "Connect STM32 to DC motor and rotary encoder",
+        "Upload controller.py and main.py to STM32 via Thonny",
+        "Run step response tests with P-only, I-only, and PI configurations",
+        "Collect velocity and controller output data, transmit to PC via serial",
+        "Plot in Jupyter Notebook; compare to Simulink model"
+      ],
+      "controller_tuning_methods": [
+        "P-only: fast response but steady-state error remains",
+        "I-only: eliminates steady-state error but very slow transient",
+        "PI combined: fast response + steady-state error eliminated",
+        "Both closed-loop poles real and negative -> stable and overdamped",
+        "Saturation identified graphically when controller output flattens at +/-100% limit"
+      ],
+      "common_mistakes": [
+        "Not resetting the integral accumulator between test runs",
+        "Forgetting to include motor driver gain (0.24) in the Simulink model",
+        "Large Ki: integral continues accumulating past setpoint, causing overshoot",
+        "Not checking for saturation — control effort exceeds +/-100%",
+        "Using class name 'Controller' instead of 'controller' (report uses lowercase)"
+      ],
+      "likely_exam_concepts": [
+        "Write the controller.py OOP class with the exact method names from the report",
+        "Calculate open-loop and closed-loop transfer functions for PI + motor",
+        "Find closed-loop poles and determine stability and damping type",
+        "Explain why P-only has steady-state error and I-only is slow",
+        "Identify controller saturation on a plot",
+        "Build Simulink model for PI velocity control with unity feedback"
+      ]
+    },
+
+    {
+      "lab_id": "Lab_4",
+      "title": "Lab 4: Tracking Control (Trapezoidal Velocity Profile)",
+      "date": "May 13, 2026",
+      "platform": "Hardware (STM32 + MicroPython) + Python/Jupyter",
+      "objectives": [
+        "Implement a trapezoidal velocity profile generator for tracking control",
+        "Use the PI controller from Lab 3B to track a desired velocity profile",
+        "Analyze steady-state tracking error during acceleration, constant, and deceleration phases",
+        "Analyze the effect of PI gains on ramp tracking performance"
+      ],
+      "prelab_questions": [
+        "What is a trapezoidal velocity profile?",
+        "What are the three phases of a trapezoidal profile (acceleration, constant, deceleration)?",
+        "How do PI gains affect ramp tracking vs step tracking?",
+        "Can integral control eliminate steady-state error during a ramp input?",
+        "What is a generator function in Python?"
+      ],
+      "important_equations": [
+        "Acceleration phase: v(t) = v_max * t / t_accel",
+        "Constant phase: v(t) = v_max",
+        "Deceleration phase: v(t) = v_max * (t_stop - t) / t_decel",
+        "Profile length: total number of time steps = (t_accel + t_ss + t_stop) / dt"
+      ],
+      "appendix_code_note": "profile.py (Appendix A), main.py (Appendix B), and Jupyter Notebook (Appendix C) were all submitted as image screenshots and are not extractable as text. The report body text describes both function names verbatim and their behavior.",
+      "reported_function_names_verbatim": {
+        "file": "profile.py",
+        "generator_function": "trapz_profile_gen()",
+        "length_method": "trapz_profile_length()",
+        "source": "Report body text, Methodology section: 'We completed the generator function trapz_profile_gen() using equations based on the velocity profile graph. Then the method trapz_profile_length() computes the number of points needed.'"
+      },
+      "reported_main_py_verbatim": "The main.py file is shown in Appendix B; it was completed to set the setpoint, run the controller, apply the correct voltage and collect data into queues.",
+      "experimental_results": [
+        {
+          "figure": "Figure 3",
+          "description": "Original gains from Lab 3B",
+          "params": {"v_ss_rad_s": 500, "t_ss_s": 2, "t_stop_s": 1, "t_accel_s": 1, "Kp": 0.19, "KI": 0.4}
+        },
+        {
+          "figure": "Figure 4",
+          "description": "Optimal response — best tracking",
+          "params": {"v_ss_rad_s": 500, "t_ss_s": 2, "t_stop_s": 1, "t_accel_s": 1, "Kp": 0.5, "KI": 1.0}
+        },
+        {
+          "figure": "Figure 5",
+          "description": "Overshooting response",
+          "params": {"v_ss_rad_s": 500, "t_ss_s": 2, "t_stop_s": 1, "t_accel_s": 1, "Kp": 0.1, "KI": 1}
+        },
+        {
+          "figure": "Figure 6",
+          "description": "Short acceleration, modified gains",
+          "params": {"v_ss_rad_s": 500, "t_ss_s": 2, "t_stop_s": 1, "t_accel_s": 0.25, "Kp": 0.5, "KI": 0.4}
+        },
+        {
+          "figure": "Figure 7",
+          "description": "Short acceleration, reduced Kp",
+          "params": {"v_ss_rad_s": 500, "t_ss_s": 2, "t_stop_s": 1, "t_accel_s": 0.25, "Kp": 0.2, "KI": 0.5}
+        }
+      ],
+      "matlab_simulink_exercises": [],
+      "python_coding_exercises": [
+        {
+          "title": "profile.py — trapz_profile_gen() generator function",
+          "source": "Appendix A (image — not extractable as text)",
+          "function_name": "trapz_profile_gen",
+          "type": "generator function (uses yield)",
+          "described_behavior": "Generator function using equations based on the velocity profile graph; yields velocity setpoints for the three phases of the trapezoidal profile"
+        },
+        {
+          "title": "profile.py — trapz_profile_length() method",
+          "source": "Appendix A (image — not extractable as text)",
+          "function_name": "trapz_profile_length",
+          "described_behavior": "Computes the number of points needed for the full trapezoidal profile"
+        },
+        {
+          "title": "main.py — Tracking control on STM32",
+          "source": "Appendix B (image — not extractable as text)",
+          "described_behavior": "Sets the setpoint, runs the controller, applies the correct voltage, and collects data into queues"
+        }
+      ],
+      "code_completion_exercises": [
+        {
+          "title": "profile.py — trapz_profile_gen() skeleton",
+          "instructions": "Complete the generator function trapz_profile_gen() using the function name from the Lab 4 report and the trapezoidal profile equations.",
+          "blanked_code": "def trapz_profile_gen(v_ss, t_accel, t_ss, t_stop, dt):\n    \"\"\"Generator: yields velocity setpoints for a trapezoidal profile.\"\"\"\n    t = 0\n\n    # Phase 1: Acceleration ramp\n    while t < t_accel:\n        yield _____________        # (1) v increases linearly from 0 to v_ss\n        t += dt\n\n    # Phase 2: Constant velocity\n    while t < t_accel + t_ss:\n        yield _____________        # (2) constant at v_ss\n        t += dt\n\n    # Phase 3: Deceleration ramp\n    while t < t_accel + t_ss + t_stop:\n        yield _____________        # (3) v decreases linearly from v_ss to 0\n        t += dt\n\n\ndef trapz_profile_length(t_accel, t_ss, t_stop, dt):\n    \"\"\"Returns the total number of points in the profile.\"\"\"\n    return _____________           # (4)",
+          "answers": {
+            "(1)": "v_ss * t / t_accel",
+            "(2)": "v_ss",
+            "(3)": "v_ss * (t_accel + t_ss + t_stop - t) / t_stop",
+            "(4)": "int((t_accel + t_ss + t_stop) / dt)"
+          },
+          "note": "Function names trapz_profile_gen and trapz_profile_length are taken verbatim from the Lab 4 report text. These were the exact names used in profile.py."
+        },
+        {
+          "title": "main.py — tracking loop skeleton",
+          "instructions": "Complete the tracking control loop described in the Lab 4 report main.py.",
+          "blanked_code": "from profile import trapz_profile_gen, trapz_profile_length\nfrom controller import controller\n\nKp = 0.5\nKI = 1.0\nctrl = controller(Kp, KI)\n\nvelocity_log = []\noutput_log = []\n\nfor setpoint in trapz_profile_gen(500, 1, 2, 1, 0.002):\n    ctrl.___________(___________)   # (1) update the setpoint each iteration\n    current_vel = encoder.get_velocity()\n    voltage = ctrl.___________(___________) # (2) run the controller\n    motor.set_effort(voltage)\n    velocity_log.append(___________) # (3) log current velocity\n    output_log.append(___________)   # (4) log controller output",
+          "answers": {
+            "(1)": "set_setpoint(setpoint)",
+            "(2)": "run(current_vel)",
+            "(3)": "current_vel",
+            "(4)": "voltage"
+          }
+        }
+      ],
+      "hardware_procedures": [
+        "Upload profile.py and updated main.py to STM32 via Thonny",
+        "Run tracking control experiment with trapezoidal setpoint profile",
+        "Collect and plot overlaid ideal vs actual velocity in Jupyter Notebook",
+        "Test gain combinations: (Kp=0.19, KI=0.4), (Kp=0.5, KI=1.0), (Kp=0.1, KI=1)"
+      ],
+      "controller_tuning_methods": [
+        "Optimal (Figure 4): Kp=0.5, KI=1.0 — best tracking, steady-state error eliminated at constant velocity",
+        "Steady-state error NOT eliminated during acceleration and deceleration phases",
+        "Increasing KI eliminates steady-state error at the constant speed segment",
+        "Decreasing Kp causes lagging response during ramp segments"
+      ],
+      "common_mistakes": [
+        "Expecting integral to eliminate error during ramp — it only eliminates at constant velocity",
+        "Using a regular function instead of a generator (yield) for trapz_profile_gen",
+        "Off-by-one errors in trapz_profile_length calculation",
+        "Using KI in profile.py and Ki elsewhere — report uses 'KI' (uppercase I) in figure captions"
+      ],
+      "likely_exam_concepts": [
+        "Write trapz_profile_gen() as a Python generator using the exact function name from the report",
+        "Write trapz_profile_length() to compute total profile point count",
+        "Explain why steady-state error exists during ramp but not at constant velocity",
+        "Choose PI gains for optimal tracking from the experimental data tables",
+        "Describe the three phases of a trapezoidal velocity profile with equations"
+      ]
+    },
+
+    {
+      "lab_id": "Lab_5A",
+      "title": "Lab 5A: Sine Sweep Test (Frequency Response Identification)",
+      "date": "May 20, 2026",
+      "platform": "Hardware (STM32 + MicroPython) + MATLAB + Python/Jupyter",
+      "objectives": [
+        "Experimentally determine the frequency response of the pendulum system using a sine sweep input",
+        "Generate experimental Bode plots (magnitude and phase) from measured data",
+        "Develop and fit a second-order transfer function model to the experimental Bode plot",
+        "Understand how wn, zeta, and Kss affect the shape of Bode plots"
+      ],
+      "prelab_questions": [
+        "What is a sine sweep (chirp) signal and why is it useful for system identification?",
+        "What is a Bode plot and what do magnitude and phase plots represent?",
+        "What causes a resonant peak in a magnitude Bode plot?",
+        "How does damping ratio affect the resonant peak?",
+        "What frequency range is reliable for this pendulum experiment?",
+        "Why does the data look chaotic after 10 Hz?"
+      ],
+      "important_equations": [
+        "Second-order TF: G(s) = Kss*wn^2 / (s^2 + 2*zeta*wn*s + wn^2)",
+        "Identified parameters: wn = 6.7 rad/s, zeta = 0.41, Kss = 0.018",
+        "Magnitude (dB) = 20*log10(|G(jw)|)",
+        "Reliable frequency range for pendulum: 2-6 Hz"
+      ],
+      "identified_parameters": {
+        "wn_rad_s": 6.7,
+        "zeta": 0.41,
+        "Kss": 0.018,
+        "reliable_frequency_range_Hz": "2-6",
+        "source": "Report body text, Results section"
+      },
+      "appendix_code_note": "The Jupyter Notebook code for sine sweep application and Bode plot generation was not included as readable text in the report. The MATLAB code snippet below appeared verbatim in the report body (Results section, Figure 3 caption).",
+      "matlab_code_verbatim": [
+        {
+          "source": "Report body text, Figure 3 — MATLAB Model Transfer Function to Generate the Theoretical Curve",
+          "code": "wn = 6.7;\nzeta = 0.41;\nKss = 0.018;\n\nnum = Kss*wn^2;\n\nG = tf(num, den)\nbode(G)\ngrid on",
+          "note": "The 'den' variable is not assigned in the extracted text fragment — it would be den = [1, 2*zeta*wn, wn^2] based on the standard second-order TF form described elsewhere in the report."
+        }
+      ],
+      "matlab_simulink_exercises": [
+        "Build second-order TF in MATLAB using identified wn=6.7, zeta=0.41, Kss=0.018",
+        "Use bode(G) and grid on to generate the theoretical curve",
+        "Overlay theoretical (red) on experimental (blue) Bode plots",
+        "Tune wn, zeta, Kss until theoretical matches experimental in 2-6 Hz range"
+      ],
+      "python_coding_exercises": [
+        {
+          "title": "Jupyter Notebook — Sine sweep and experimental Bode plots",
+          "source": "Jupyter Notebook (not submitted as extractable text in report)",
+          "described_behavior": "Applied linear sine sweep to pendulum, recorded angular response via encoder, generated experimental Bode plots for magnitude and phase from recorded input/output data"
+        }
+      ],
+      "code_completion_exercises": [
+        {
+          "title": "Lab 5A MATLAB — Build and plot the identified transfer function",
+          "instructions": "Complete the MATLAB snippet that appeared verbatim in the Lab 5A report (Figure 3) to generate the theoretical Bode plot.",
+          "blanked_code": "wn = _________;     % (1) identified natural frequency (rad/s)\nzeta = _________;   % (2) identified damping ratio\nKss = _________;    % (3) identified steady-state gain\n\nnum = Kss*wn^2;\nden = [1, _________, _________];  % (4) standard 2nd-order denominator coefficients\n\nG = tf(num, den);\n_________           % (5) generate Bode plot\ngrid on",
+          "answers": {
+            "(1)": "6.7",
+            "(2)": "0.41",
+            "(3)": "0.018",
+            "(4) coefficient 1": "2*zeta*wn",
+            "(4) coefficient 2": "wn^2",
+            "(5)": "bode(G)"
+          },
+          "note": "The variable names wn, zeta, Kss, num, den, and G are taken verbatim from the report. The assignment 'den = [1, 2*zeta*wn, wn^2]' was not in the extracted text fragment but is required to complete the tf() call."
+        }
+      ],
+      "hardware_procedures": [
+        "Connect STM32 to DC motor (pendulum setup) and rotary encoder",
+        "Apply linear sine sweep input signal to pendulum system",
+        "Reliable sweep range: 2-6 Hz for the long pendulum",
+        "Record angular response via encoder in Jupyter Notebook",
+        "Transfer data to PC via serial for analysis"
+      ],
+      "controller_tuning_methods": [
+        "Tune wn to shift resonant peak left/right on frequency axis",
+        "Tune zeta to adjust sharpness of resonant peak (lower = sharper)",
+        "Tune Kss to shift entire magnitude plot up or down",
+        "Match theoretical to experimental only in the reliable 2-6 Hz range"
+      ],
+      "common_mistakes": [
+        "Trusting Bode data above 10 Hz — sensor noise and mechanical limits make it unreliable",
+        "Confusing wn (rad/s) with Hz",
+        "Forgetting den = [1, 2*zeta*wn, wn^2] — just writing num without den",
+        "Omitting 'grid on' after bode(G)",
+        "Trying to match the full frequency range instead of only the reliable 2-6 Hz window"
+      ],
+      "likely_exam_concepts": [
+        "Write the MATLAB code verbatim from the report to generate the second-order TF Bode plot",
+        "Explain how wn, zeta, and Kss each affect the Bode magnitude and phase plots",
+        "Identify resonant frequency from a Bode plot",
+        "Why is data above 10 Hz unreliable?",
+        "What is the reliable frequency range for the pendulum experiment and why?"
+      ]
+    },
+
+    {
+      "lab_id": "Lab_5B",
+      "title": "Lab 5B: Closed-Loop Position Control (PID on Pendulum)",
+      "date": "May 27, 2026",
+      "platform": "Hardware (STM32 + MicroPython) + MATLAB + Python/Jupyter",
+      "objectives": [
+        "Implement and tune a PID controller for position control of the pendulum",
+        "Optimize PID performance by sequentially tuning Kp, then KD, then KI",
+        "Understand derivative controller drawbacks (noise amplification from encoder)",
+        "Use MATLAB rltool with root locus to validate and analyze the PID design",
+        "Learn the effect of sampling rate on derivative control noise"
+      ],
+      "prelab_questions": [
+        "What does each gain (Kp, KI, KD) do to system performance?",
+        "Why does derivative control amplify noise?",
+        "How do you use MATLAB rltool for root locus analysis?",
+        "What are z1 and z2 zeros in a PID controller?",
+        "What is the sequential tuning order for a PID controller?"
+      ],
+      "important_equations": [
+        "PID control law: u(t) = Kp*e + KI*integral(e)dt + KD*de/dt",
+        "PID TF: C(s) = Kp + KI/s + KD*s = (KD*s^2 + Kp*s + KI) / s",
+        "PID zeros z1, z2: roots of KD*s^2 + Kp*s + KI = 0",
+        "G_pendulum(s) = 0.018*6.7^2 / (s^2 + 2*0.41*6.7*s + 6.7^2)"
+      ],
+      "identified_gains_verbatim": {
+        "Kp": 100,
+        "KI": 350,
+        "KD": 5.6,
+        "source": "Report body text, Results section: 'Step response and controller output using optimal PID gains, where Kp = 100, KI = 350, and KD = 5.6'"
+      },
+      "gain_name_note": "The report uses 'KI' and 'KD' (uppercase I and D) in all figure captions and results text. Use this capitalization exactly.",
+      "appendix_code_note": "The Jupyter Notebook with PID implementation, step response plots, and controller output plots (Appendix A) was submitted as an image and is not extractable as text. The MATLAB rltool workflow is described in the report body text.",
+      "reported_matlab_workflow_verbatim": [
+        "We calculated z1 and z2 in Matlab. This calculation is shown below in Figure 4.",
+        "We graphed the root locus and response in Matlab using rltool with added z1 and z2 zeros, and pole at origin.",
+        "Root Locus With Optimized Gain Values Kp=100, Ki=350, Kd=5.6",
+        "Time Step Response for Gain Values of Kp=100, Ki=350, Kd=5.6"
+      ],
+      "reported_effects_verbatim": {
+        "P_control": "The proportional controller increased the speed of the response and reduced the overall error by applying a correction proportional to the position error. As the proportional gain increased, the system responded faster, but excessive proportional gain caused larger oscillations and overshoot.",
+        "D_control": "The derivative controller improved the damping of the system by responding to how quickly the error changed over time. This reduced overshoot and helped stabilize the pendulum more quickly. However, high derivative gains amplified measurement noise from the encoder, which introduced vibrations into the controller output.",
+        "I_control": "The integral controller minimized the steady-state error by accumulating the error over time and continuously correcting small remaining offsets from the setpoint. While this improved long-term accuracy, excessive integral gain increased oscillation and overshoot because the stored accumulated error continued driving the system even after the pendulum approached the desired position.",
+        "sampling_rate": "Increasing the sampling period reduced the effective sampling frequency of the controller. This helped reduce vibrations because the derivative controller became less sensitive to high-frequency [noise], producing a smoother controller output and a more stable response."
+      },
+      "matlab_simulink_exercises": [
+        "Calculate z1 and z2 zeros from PID numerator polynomial: roots([KD, Kp, KI])",
+        "Use rltool to plot root locus with PID zeros z1, z2 and pole at origin",
+        "Graph closed-loop step response using rltool",
+        "Verify optimized gains (Kp=100, KI=350, KD=5.6) give stable response"
+      ],
+      "python_coding_exercises": [
+        {
+          "title": "Jupyter Notebook — PID position control, step response and controller output plots",
+          "source": "Appendix A (image — not extractable as text)",
+          "described_behavior": "Implemented PID loop on STM32, recorded angular position (encoder) and controller output, plotted step response and controller output for each gain configuration (P-only, PD, PID)"
+        }
+      ],
+      "code_completion_exercises": [
+        {
+          "title": "MATLAB — Compute PID zeros z1 and z2",
+          "instructions": "Complete the MATLAB code to compute z1 and z2 from the PID gains used in Lab 5B, as described in the report.",
+          "blanked_code": "Kp = 100;\nKI = 350;\nKD = 5.6;\n\n% PID numerator polynomial: KD*s^2 + Kp*s + KI\n% z1 and z2 are the roots\npid_zeros = roots([___, ___, ___]);   % (1) fill in the three coefficients\nz1 = pid_zeros(1);\nz2 = pid_zeros(2);",
+          "answers": {
+            "(1) coefficients": "KD, Kp, KI"
+          },
+          "note": "The report uses capitalization KI and KD (not Ki and Kd) in all results text and figure captions."
+        },
+        {
+          "title": "Effects of P, D, I gains — short-answer from report text",
+          "instructions": "Using the exact language from the Lab 5B report, complete each sentence describing the effect of each gain.",
+          "blanks": [
+            {
+              "prompt": "The proportional controller increased __________ and reduced __________.",
+              "answer": "the speed of the response / the overall error"
+            },
+            {
+              "prompt": "High derivative gains amplified __________ from the encoder, which introduced __________ into the controller output.",
+              "answer": "measurement noise / vibrations"
+            },
+            {
+              "prompt": "The integral controller minimized __________ by accumulating the error over time.",
+              "answer": "the steady-state error"
+            },
+            {
+              "prompt": "Increasing the sampling period reduced the effective __________ of the controller.",
+              "answer": "sampling frequency"
+            }
+          ]
+        }
+      ],
+      "hardware_procedures": [
+        "Connect STM32 to pendulum motor and rotary encoder",
+        "Upload PID main.py to STM32 via Thonny",
+        "Tuning order: Kp first, then KD, then KI",
+        "Reduce sampling rate if KD causes noise-induced vibration",
+        "Verify controller output stays within saturation limits"
+      ],
+      "controller_tuning_methods": [
+        "Sequential order from report: Kp -> KD -> KI",
+        "Optimal: Kp=100, KI=350, KD=5.6",
+        "High KD amplifies encoder noise -> reduce sampling period to mitigate",
+        "Excessive KI: accumulated error causes overshoot past setpoint"
+      ],
+      "common_mistakes": [
+        "Using lowercase ki and kd instead of KI and KD — the report uses uppercase",
+        "Tuning KI before KD",
+        "Not reducing sampling period when high KD causes vibration",
+        "Integral windup: large KI causes overshoot because accumulated error keeps driving system",
+        "Passing wrong coefficient order to roots() — must be [KD, Kp, KI] for z1 and z2"
+      ],
+      "likely_exam_concepts": [
+        "Write MATLAB code to compute z1 and z2 zeros using roots([KD, Kp, KI])",
+        "Explain effects of P, D, I gains on position control response using language from the report",
+        "Describe the sequential PID tuning procedure (Kp -> KD -> KI)",
+        "Why does derivative control amplify noise and how is it mitigated?",
+        "Use rltool with z1, z2 zeros and pole at origin to analyze the PID design"
+      ]
+    }
+  ],
+
+  "key_hardware": {
+    "microcontroller": "STM32",
+    "motor": "DC Motor",
+    "encoder": "Rotary Encoder",
+    "motor_driver_gain": "24V / 100% = 0.24 V/percent  (from Lab 3B: '24/100 = 0.24')",
+    "ide": "Thonny (for MicroPython upload)",
+    "language": "MicroPython"
+  },
+  "key_parameters_identified": {
+    "DC_motor_model": {
+      "Kss": 38.5,
+      "tau_s": 0.23,
+      "units": "Kss in rad/s/V, tau in seconds",
+      "TF": "G(s) = 38.5 / (0.23*s + 1)",
+      "steady_state_velocity_rad_s": 925,
+      "source": "Lab 3A experimental step response"
+    },
+    "pendulum_model": {
+      "wn_rad_s": 6.7,
+      "zeta": 0.41,
+      "Kss": 0.018,
+      "TF": "G(s) = 0.018*6.7^2 / (s^2 + 2*0.41*6.7*s + 6.7^2)",
+      "MATLAB_snippet_verbatim": "wn = 6.7;\nzeta = 0.41;\nKss = 0.018;\nnum = Kss*wn^2;\nG = tf(num, den)\nbode(G)\ngrid on",
+      "source": "Lab 5A report body text, Figure 3"
+    },
+    "optimal_PI_velocity_gains": {
+      "Kp": 0.19,
+      "Ki": 0.5,
+      "source": "Lab 3B report body text: 'Using: Kp = 0.19  Ki = 0.5'"
+    },
+    "optimal_PID_position_gains": {
+      "Kp": 100,
+      "KI": 350,
+      "KD": 5.6,
+      "capitalization_note": "Report uses KI and KD (uppercase I and D) throughout",
+      "source": "Lab 5B report body text: 'Kp = 100, KI= 350, and KD = 5.6'"
+    }
+  },
+  "cross_lab_concepts": {
+    "system_identification_methods": {
+      "first_order_from_step": "Apply step input, measure steady-state velocity and time to 63.2% -> K and tau",
+      "second_order_from_sine_sweep": "Apply sine sweep, generate experimental Bode plot, tune wn/zeta/Kss until theoretical matches"
+    },
+    "controller_types_summary": {
+      "P":   "Fast response; residual steady-state error for type-0 plant",
+      "I":   "Eliminates steady-state error; slows transient; can cause oscillation",
+      "D":   "Improves damping; reduces overshoot; amplifies encoder noise",
+      "PI":  "Combines fast response with steady-state error elimination",
+      "PD":  "Fast response with improved damping; still has steady-state error",
+      "PID": "Full control: speed + damping + error elimination"
+    },
+    "stability_from_pole_locations": {
+      "both_real_negative": "Overdamped — no oscillation (Lab 3B result)",
+      "complex_negative_real_part": "Underdamped — oscillatory but stable",
+      "imaginary_axis": "Marginally stable",
+      "right_half_plane": "Unstable"
+    },
+    "file_names_used_across_labs": {
+      "motor.py": "Provided MicroPython module (Labs 3A, 3B, 4, 5A, 5B)",
+      "encoder.py": "Provided MicroPython module (Labs 3A, 3B, 4, 5A, 5B)",
+      "main.py": "Student-written main program (Labs 3A, 3B, 4, 5B)",
+      "controller.py": "Student-written PI controller class (Labs 3B, 4)",
+      "profile.py": "Student-written velocity profile generator (Lab 4)"
+    },
+    "capitalization_traps": {
+      "Lab 3B Ki": "lowercase i — 'Ki = 0.5' in report body text",
+      "Lab 4 KI": "uppercase I — 'KI = 0.4' in figure captions",
+      "Lab 5B KI and KD": "uppercase I and D — 'KI= 350, and KD = 5.6' in report body text",
+      "class name": "'controller' (lowercase c) — matches file name controller.py"
+    }
+  }
+}
